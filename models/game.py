@@ -22,6 +22,5 @@ class Game(db.Model):
         if self.guesses_left == 0:
             self.status = "Complete"
     
-    def makeGuess(self):
-
+    def removeGuess(self):
         self.guesses_left -= 1
