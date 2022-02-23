@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
 from db import db
+from resources.game import GameResource, Games
 from resources.user import UserRegister, UserResource
 
 
@@ -43,6 +44,9 @@ def login():
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserResource, "/user/<id>")
+api.add_resource(GameResource, '/game/<id>', '/game')
+api.add_resource(Games, '/games')
+
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ class Guess(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.String(5),nullable=False )
     accuracy = db.Column(db.Boolean, nullable = False)
-    game_id = db.Column(db.Integer, nullable=False)
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     wordle_answer = db.Column(db.String(5), db.ForeignKey("game.wordle_answer"), nullable=False)
 
@@ -21,6 +21,8 @@ class Guess(db.Model):
     def check_word(self, word):
         return word == self.wordle_answer
 
+    def json(self):
+        return {"id": self.id, "word": self.word, "accurate": self.accuracy, "game id": self.game_id}
 
     def _repr__(self):
         return f"word : {self.word}, accuracy: {self.accuracy}"
