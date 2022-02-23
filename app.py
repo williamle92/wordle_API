@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request, make_response, jsonify
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
@@ -20,8 +21,18 @@ db.init_app(app)
 # instantiate API object
 api = Api(app)
 
+# instantiate jwt object
+jwt = JWTManager(app)
 
 # temporary view
 @app.route('/')
 def home():
     return "Hello World!"
+
+app.route("/login")
+def login():
+    
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
