@@ -4,7 +4,11 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
 from db import db
-from generateword import *
+from resources.user import UserRegister, UserResource
+
+
+
+
 
 
 
@@ -30,12 +34,16 @@ jwt = JWTManager(app)
 # temporary view
 @app.route('/')
 def home():
-    return answer
+    return "Wordle!"
 
 app.route("/login")
 def login():
     return "hello world"
     
+
+api.add_resource(UserRegister, '/register')
+api.add_resource(UserResource, "/user/<id>")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
