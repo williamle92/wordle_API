@@ -4,19 +4,10 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
 from db import db
-import random
+from generateword import *
 
-def load_dict(file_name):
-    file = open(file_name)
-    words = file.readlines()
-    file.close()
-    return [word[:5].upper() for word in words]
 
-possible_wordle_words = load_dict("dict_wordle.txt")
-english_5_letter_words = load_dict("english_5_words.txt")
-answer = random.choice(possible_wordle_words)
 
-print(possible_wordle_words)
 # create flask app
 app = Flask(__name__)
 
@@ -39,7 +30,7 @@ jwt = JWTManager(app)
 # temporary view
 @app.route('/')
 def home():
-    return "Hello World!"
+    return answer
 
 app.route("/login")
 def login():
