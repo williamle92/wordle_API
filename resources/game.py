@@ -4,6 +4,8 @@ from models.game import Game
 
 
 class GameResource(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("user_id", type=int, required=True, help="Must contain a User ID")
     def get(self, id):
         game = Game.find_by_id(id)
         if game:

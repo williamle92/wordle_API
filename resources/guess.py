@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.guess import Guess
-
-
+from models.game import Game
+from 
 
 class GuessResource(Resource):
     parser = reqparse.RequestParser()
@@ -19,7 +19,10 @@ class GuessResource(Resource):
 
     def post(self):
         data = GuessResource.parser.parse_args()
-        
         guess = Guess(**data)
+        if guess in 
+        id = guess.game_id
+        game = Game.find_by_id(id)
+        game.remove_guess()
         guess.save_to_db
-        return {"Message": "Successfully created a guess"}, 200
+        return {"Message": "Successfully created a guess", "data": {"guess info" : guess.json(), "game status": game.json()}}, 200

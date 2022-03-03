@@ -1,6 +1,5 @@
-from sqlalchemy import Integer
 from db import db
-from generateword import *
+from generateword import answer
 
 
 class Game(db.Model):
@@ -10,14 +9,16 @@ class Game(db.Model):
     guesses_left = db.Column(db.Integer)
     status = db.Column(db.String(20))
     guesses = db.relationship('Guess', backref="game", lazy="dynamic")
-    users = db.relationship('User', backref="game", lazy="dynamic")
+    
+    guesses_left = 6 -len()
+    status = "Open"
 
-    def __init__(self):
+    def __init__(self, user_id):
         self.guess_with_context = []
         self.guess_with_user = []
         self.wordle_answer = answer
-        self.guesses_left = 6
-        self.status = "Open"
+        self.user_id = user_id
+       
 
     def json(self):
         return {"type": "Game", "id": self.id, "guesses_left": self.guesses_left, "status": self.status, "users": [user.json() for user in self.users.all()], "guesses": [guess.json() for guess in self.guesses.all()], "user guess": self.guess_with_user, "guess with context": self.guess_with_context}
