@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_migrate import Migrate
 from flask_restful import Api
@@ -45,13 +45,10 @@ def login():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     user = User.query.filter_by(username=username).first()
-    print(user)
-    print(username, password)
+
     if user:
-        # Create a password hash
-        pwhash = generate_password_hash(password)
         # Compares the password hash against password
-        is_pass_correct = check_password_hash(pwhash, password)
+        is_pass_correct = check_password_hash(user.password, password)
 
         if is_pass_correct:
             refresh = create_refresh_token(identity=user.id)
@@ -59,7 +56,7 @@ def login():
 
             return jsonify(
                 {"user": {
-                    "refresh": refresh, "access": access, "data" : {"username": user.username, "email": user.email}
+                    "refresh": refresh, "access": access, "data": {"username": user.username, "email": user.email}
                 }
                 }), 200
     return jsonify({"Message": "Error! The credentials you entered are incorrect, please try again."}), 401

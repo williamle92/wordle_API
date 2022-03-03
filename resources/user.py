@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.user import User
 from werkzeug.security import generate_password_hash
+from flask_jwt_extended import jwt_required
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -20,17 +21,23 @@ class UserRegister(Resource):
                         help="Must contain a password"
                         )
 
+    @jwt_required()
     def post(self):
-        # parse request
+        # serialize request
         data = UserRegister.parser.parse_args()
+        # check to see if user exists by querying db
         if User.find_by_username(data['username']):
-            return {"Message": "There is already an existing username, please try again with different username"}, 400
+            # if user exist, return message
+            return {"Message": "Error! That username is already taken, please try again with different username"}, 400
+        # generate a password hash
         pwhash = generate_password_hash(data["password"])
+
         user = User(username=data["username"], email=data['email'], password=pwhash)
         user.save_to_db()
         return {"Message": "User created successfully", "data": user.json()}, 201
 
 class UserResource(Resource):
+    @jwt_required()
     def get(self, id):
         user = User.query.filter_by(id=id).first()
         if user:
