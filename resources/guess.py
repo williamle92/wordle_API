@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse
 from models.guess import Guess
 from models.game import Game
 from generateword import english_5_letter_words
+from flask_jwt_extended import jwt_required
 
 class GuessResource(Resource):
     parser = reqparse.RequestParser()
@@ -15,8 +16,9 @@ class GuessResource(Resource):
                         type=int,
                         required=True,
                         help="Must contain a game ID"
+                        
                         )
-
+    @jwt_required()
     def post(self):
         data = GuessResource.parser.parse_args()
         guess = Guess(**data)

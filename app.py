@@ -64,7 +64,7 @@ def login():
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserResource, "/user/<id>")
-api.add_resource(GameResource, '/game/<id>', '/game')
+api.add_resource(GameResource, '/game/<username>', '/game')
 api.add_resource(Games, '/games')
 api.add_resource(GuessResource, "/guess")
 

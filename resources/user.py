@@ -8,20 +8,20 @@ class UserRegister(Resource):
     parser.add_argument('username',
                         type=str,
                         required=True,
-                        help="Must contain a username"
+                        help="Must contain key 'username' and the username in JSON request body"
                         )
     parser.add_argument('email',
                         type=str,
                         required=True,
-                        help="Can not register without an email"
+                        help="Must contain key 'email' and the email in JSON request body"
                         )
     parser.add_argument('password',
                         type=str,
                         required=True,
-                        help="Must contain a password"
+                        help="Must contain key 'password' and the password in JSON request body"
                         )
 
-    @jwt_required()
+  
     def post(self):
         # serialize request
         data = UserRegister.parser.parse_args()
