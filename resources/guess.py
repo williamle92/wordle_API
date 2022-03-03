@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.guess import Guess
 from models.game import Game
-from 
+from generateword import english_5_letter_words
 
 class GuessResource(Resource):
     parser = reqparse.RequestParser()
@@ -20,7 +20,9 @@ class GuessResource(Resource):
     def post(self):
         data = GuessResource.parser.parse_args()
         guess = Guess(**data)
-        if guess in 
+        if guess not in english_5_letter_words:
+            return {"Message": "Please use an actual word"}
+
         id = guess.game_id
         game = Game.find_by_id(id)
         game.remove_guess()

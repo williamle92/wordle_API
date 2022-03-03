@@ -8,7 +8,6 @@ class Guess(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     guess = db.Column(db.String(5),nullable=False )
     accuracy = db.Column(db.Boolean, nullable = False)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     wordle_answer = db.Column(db.String(5), db.ForeignKey("game.wordle_answer"), nullable=False)
 
@@ -23,7 +22,7 @@ class Guess(db.Model):
     def check_word(self, word):
         return word == self.wordle_answer
 
-    def guess_hints(self, guess):
+    def guess_hints(self):
         arr = []
         for index, letter in enumerate(self.guess):
             if self.wordle_answer[index] == letter:

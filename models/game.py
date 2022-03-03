@@ -1,6 +1,11 @@
 from db import db
 from generateword import answer
 
+guesses = db.Table('guesses', db.Column('guess_id', db.Integer, db.ForeignKey(
+    "guess.id"), primary_key=True), db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True))
+users = db.Table('users', db.Column('user_id', db.Integer, db.ForeignKey(
+    "user.id"), primary_key=True), db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True))
+
 
 class Game(db.Model):
     __tablename__ = "game"
@@ -8,23 +13,23 @@ class Game(db.Model):
     wordle_answer = db.Column(db.String(5), nullable=False, unique=True)
     guesses_left = db.Column(db.Integer)
     status = db.Column(db.String(20))
-    guesses = db.relationship('Guess', backref="game", lazy="dynamic")
-    
-    guesses_left = 6 -len()
+    guesses = db.relationship('Guess', secondary =guesses, lazy="dynamic")
+    users = db.relationship('User', secondary=users, lazy="dynamic")
+
+    # State of the game
+    guesses_left = 6
     status = "Open"
 
-    def __init__(self, user_id):
-        self.guess_with_context = []
-        self.guess_with_user = []
+    # On instantiating you would want a new world
+    def __init__(self):
         self.wordle_answer = answer
-        self.user_id = user_id
-       
 
     def json(self):
-        return {"type": "Game", "id": self.id, "guesses_left": self.guesses_left, "status": self.status, "users": [user.json() for user in self.users.all()], "guesses": [guess.json() for guess in self.guesses.all()], "user guess": self.guess_with_user, "guess with context": self.guess_with_context}
+        return {"type": "Game", "id": self.id,  "game id": self.id, "guesses_left": self.guesses_left, "users": [self.users], "guesses": [self.guesses]}
 
-    def guess_with_user(self, word, user):
-        self.guess_with_user.append({"guess": word, "user": user})
+    # def guess_with_user(self):
+    #     arr = []
+    #     arr.append({"guess": self., "user id": user})
 
     def guess_with_context(self):
         for word in self.guesses:
@@ -38,8 +43,6 @@ class Game(db.Model):
                     arr.append({word[i], "no match"})
             self.guess_with_context.append(arr)
 
-
-    
     def changeGameStatus(self):
         if self.guesses_left == 0:
             self.status = "Complete"

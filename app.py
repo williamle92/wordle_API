@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_migrate import Migrate
@@ -6,6 +6,8 @@ from flask_restful import Api
 from config import Config
 from db import db
 from models.user import User
+from models.guess import Guess
+from models.guess import Game
 from resources.game import GameResource, Games
 from resources.guess import GuessResource
 from resources.user import UserRegister, UserResource
