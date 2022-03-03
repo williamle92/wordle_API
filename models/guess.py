@@ -1,7 +1,5 @@
 from db import db
-from models.game import Game
-
-
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Guess(db.Model):
     __tablename__ = "guess"
@@ -15,11 +13,11 @@ class Guess(db.Model):
     def __init__(self, guess, user_id, game_id):
         self.guess = guess
         self.user_id = user_id
-        self.accuracy =  self.check_word(guess)
+        self.accuracy =  self.accuracy
         self.game_id =game_id
 
-
-    def check_word(self, word):
+    @hybrid_property
+    def accuracy(self, word):
         return word == self.wordle_answer
 
     def guess_hints(self):
@@ -35,7 +33,7 @@ class Guess(db.Model):
 
 
     def json(self):
-        return {"id": self.id, "game id": self.game_id, "guess": self.guess, "accurate": self.accuracy, "guess hints": self.guess_hints(self.guess)}
+        return {"id": self.id, "game id": self.game_id, "guess": self.guess, "accurate": self.accuracy, "accuracy": self.accuracy, "guess hints": self.guess_hints(self.guess)}
 
     def _repr__(self):
         return f"word : {self.guess}, accuracy: {self.accuracy}"

@@ -7,7 +7,6 @@ from config import Config
 from db import db
 from models.user import User
 from models.guess import Guess
-from models.guess import Game
 from resources.game import GameResource, Games
 from resources.guess import GuessResource
 from resources.user import UserRegister, UserResource
@@ -64,7 +63,7 @@ def login():
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserResource, "/user/<id>")
-api.add_resource(GameResource, '/game/<username>', '/game')
+api.add_resource(GameResource, '/game/<username>', '/game', "/game/id/<id>")
 api.add_resource(Games, '/games')
 api.add_resource(GuessResource, "/guess")
 

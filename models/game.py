@@ -1,6 +1,8 @@
 from db import db
 from generateword import possible_wordle_words
 import random
+from sqlalchemy.ext.hybrid import hybrid_property
+from models.guess import Guess
 
 guesses = db.Table('guesses', db.Column('guess_id', db.Integer, db.ForeignKey(
     "guess.id"), primary_key=True), db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True))
@@ -12,22 +14,32 @@ class Game(db.Model):
     __tablename__ = "game"
     id = db.Column(db.Integer, primary_key=True)
     wordle_answer = db.Column(db.String(5), nullable=False, unique=True)
-    guesses_left = db.Column(db.Integer)
+    creator_id = db.Column(db.Integer)
+    attempts = db.Column(db.Integer)
     status = db.Column(db.String(20))
-    guesses = db.relationship('Guess', secondary =guesses, lazy="dynamic")
-    users = db.relationship('User', secondary=users, lazy="dynamic")
+    guesses = db.relationship('Guess', secondary =guesses, backref=db.backref('game_id'))
+    users = db.relationship('User', secondary=users, backref=db.backref('game id'))
+    guesses_left = db.Column(db.Integer)
 
-    # State of the game
-    guesses_left = 6
-    status = "Open"
 
     # On instantiating you would want a new world
     def __init__(self, creator_id):
         self.wordle_answer = random.choice(possible_wordle_words)
         self.creator_id = creator_id
+        self.status = "Open"
+        self.attempts = 6
 
+    # @hybrid_property
+    # def guesses(self):
+    #     guesses = Guess.query.filter(Guess.game_id.any(id=self.id)).all()
+    #     return guesses
+
+    @hybrid_property
+    def guesses_left(self):
+        return 6 - len(self.guesses)
+    
     def json(self):
-        return {"type": "Game","creator_id": self.creator_id,  "id": self.id,  "game id": self.id, "guesses_left": self.guesses_left, "users": [self.users], "guesses": [self.guesses]}
+        return {"type": "Game","creator_id": self.creator_id,  "id": self.id,  "game_id": self.id, "users": self.users, "guesses_left": self.guesses_left}
 
     # def guess_with_user(self):
     #     arr = []
@@ -60,6 +72,12 @@ class Game(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def __repr__(self):
+        return f"id: {self.id}, status: {self.status}"
+
     @classmethod
     def find_by_id(self, id):
         return Game.query.filter_by(id=id).first()
+
+
+

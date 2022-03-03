@@ -1,7 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.game import Game
 from flask_jwt_extended import jwt_required
-
 from models.user import User
 
 
@@ -11,7 +10,10 @@ class GameResource(Resource):
     @jwt_required()
     def get(self, id):
         game = Game.find_by_id(id)
+        print(game)
         if game:
+            print(game.guesses_left)
+
             return game.json()
         return {"Message": "The game ID could not be found. Please try Again"}, 404
 
