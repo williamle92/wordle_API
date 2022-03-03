@@ -17,12 +17,14 @@ class Game(db.Model):
     creator_id = db.Column(db.Integer)
     attempts = db.Column(db.Integer)
     status = db.Column(db.String(20))
-    guesses = db.relationship('Guess', secondary =guesses, backref=db.backref('game_id'))
-    users = db.relationship('User', secondary=users, backref=db.backref('game id'))
+    guesses = db.relationship(
+        'Guess', secondary=guesses, backref=db.backref('game_id'))
+    users = db.relationship('User', secondary=users,
+                            backref=db.backref('game id'))
     guesses_left = db.Column(db.Integer)
 
-
     # On instantiating you would want a new world
+
     def __init__(self, creator_id):
         self.wordle_answer = random.choice(possible_wordle_words)
         self.creator_id = creator_id
@@ -37,32 +39,32 @@ class Game(db.Model):
     @hybrid_property
     def guesses_left(self):
         return 6 - len(self.guesses)
-    
+
     def json(self):
-        return {"type": "Game","creator_id": self.creator_id,  "id": self.id,  "game_id": self.id, "users": self.users, "guesses_left": self.guesses_left}
+        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "users": self.users, "guesses_left": self.guesses_left, "clues": {"guesses_with_context": self.guess_with_context}}
 
     # def guess_with_user(self):
     #     arr = []
     #     arr.append({"guess": self., "user id": user})
 
+    @hybrid_property
     def guess_with_context(self):
+        arr_all_words = []
         for word in self.guesses:
             arr = []
-            for i in word:
-                if word[i] == self.wordle_answer[i]:
-                    arr.append({word[i], "green"})
+            for i, letter in enumerate(word):
+                if letter == self.wordle_answer[i]:
+                    arr.append((letter, "green"))
                 if word[i] in self.wordle_answer:
-                    arr.append([word[i], "yellow"])
+                    arr.append((letter, "yellow"))
                 else:
-                    arr.append({word[i], "no match"})
-            self.guess_with_context.append(arr)
+                    arr.append((letter, "no match"))
+            arr_all_words.append(arr)
+        return arr_all_words
 
     def changeGameStatus(self):
         if self.guesses_left == 0:
             self.status = "Complete"
-
-    def removeGuess(self):
-        self.guesses_left -= 1
 
     def save_to_db(self):
         db.session.add(self)
@@ -78,6 +80,3 @@ class Game(db.Model):
     @classmethod
     def find_by_id(self, id):
         return Game.query.filter_by(id=id).first()
-
-
-
