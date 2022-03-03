@@ -40,27 +40,29 @@ def home():
     return "Wordle!"
 
 
-app.post("/login")
-
-
+@app.post("/login")
 def login():
-    username = request.json.get('username', '')
-    password = request.json.get('password', "")
-
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
     user = User.query.filter_by(username=username).first()
-
+    print(user)
+    print(username, password)
     if user:
-        is_pass_correct = check_password_hash(user.password, password)
+        # Create a password hash
+        pwhash = generate_password_hash(password)
+        # Compares the password hash against password
+        is_pass_correct = check_password_hash(pwhash, password)
+
         if is_pass_correct:
             refresh = create_refresh_token(identity=user.id)
             access = create_access_token(identity=user.id)
 
             return jsonify(
                 {"user": {
-                    "refresh": refresh, "access": access, "username": user.username
-                }}
-            )
-    return jsonify({"Message": "The credentials you entered are incorrect, please try again."}), 401
+                    "refresh": refresh, "access": access, "data" : {"username": user.username, "email": user.email}
+                }
+                }), 200
+    return jsonify({"Message": "Error! The credentials you entered are incorrect, please try again."}), 401
 
 
 api.add_resource(UserRegister, '/register')

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.user import User
-
+from werkzeug.security import generate_password_hash
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -21,11 +21,12 @@ class UserRegister(Resource):
                         )
 
     def post(self):
+        # parse request
         data = UserRegister.parser.parse_args()
         if User.find_by_username(data['username']):
             return {"Message": "There is already an existing username, please try again with different username"}, 400
-
-        user = User(**data)
+        pwhash = generate_password_hash(data["password"])
+        user = User(username=data["username"], email=data['email'], password=pwhash)
         user.save_to_db()
         return {"Message": "User created successfully", "data": user.json()}, 201
 
