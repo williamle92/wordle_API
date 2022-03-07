@@ -2,12 +2,18 @@ from db import db
 from generateword import possible_wordle_words
 import random
 from sqlalchemy.ext.hybrid import hybrid_property
-from models.guess import Guess
 
-guesses = db.Table('guesses', db.Column('guess_id', db.Integer, db.ForeignKey(
-    "guess.id"), primary_key=True), db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True))
-users = db.Table('users', db.Column('user_id', db.Integer, db.ForeignKey(
-    "user.id"), primary_key=True), db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True))
+
+guesses = db.Table('guesses', 
+db.Column('guess_id', db.Integer, db.ForeignKey("guess.id"), primary_key=True), 
+db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True)
+)
+
+
+users = db.Table('users',
+db.Column('user_id', db.Integer, db.ForeignKey("user.id"), primary_key=True), 
+db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True)
+)
 
 
 class Game(db.Model):
@@ -18,12 +24,12 @@ class Game(db.Model):
     attempts = db.Column(db.Integer)
     status = db.Column(db.String(20))
     guesses = db.relationship(
-        'Guess', secondary=guesses, backref=db.backref('game_id'))
+        'Guess', secondary=guesses, backref=db.backref('game_id', lazy="dynamic"))
     users = db.relationship('User', secondary=users,
-                            backref=db.backref('game id'))
+                            backref=db.backref('game_id', lazy="dynamic"))
     guesses_left = db.Column(db.Integer)
 
-    # On instantiating you would want a new world
+    # On instantiating you would want a new word
 
     def __init__(self, creator_id):
         self.wordle_answer = random.choice(possible_wordle_words)
@@ -41,7 +47,7 @@ class Game(db.Model):
         return 6 - len(self.guesses)
 
     def json(self):
-        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "users": self.users, "guesses_left": self.guesses_left, "clues": {"guesses_with_context": self.guess_with_context}}
+        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "guesses_left": self.guesses_left, "clues": {"guesses_with_context": self.guess_with_context}}
 
     # def guess_with_user(self):
     #     arr = []

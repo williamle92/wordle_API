@@ -18,12 +18,18 @@ class GuessResource(Resource):
                         help="Must contain a game ID"
                         
                         )
+
+
     @jwt_required()
     def post(self):
         data = GuessResource.parser.parse_args()
         guess = Guess(**data)
-        if guess not in english_5_letter_words:
-            return {"Message": "Please use an actual word"}
+        
+        
+        if guess.guess not in english_5_letter_words:
+            return {"Message": "Please use an actual word"}, 404
+        if guess.guess in english_5_letter_words:
+            pass
 
         id = guess.game_id
         game = Game.find_by_id(id)

@@ -10,11 +10,11 @@ from models.guess import Guess
 from resources.game import GameResource, Games
 from resources.guess import GuessResource
 from resources.user import UserRegister, UserResource
-
+# from schema import ma
 
 # create flask app
 app = Flask(__name__)
-
+# ma.init_app(app)
 # Get configs from Config object
 app.config.from_object(Config)
 
@@ -63,7 +63,7 @@ def login():
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserResource, "/user/<id>")
-api.add_resource(GameResource, '/game/<username>', '/game', "/game/id/<id>")
+api.add_resource(GameResource,  '/game', "/game/id/<id>")
 api.add_resource(Games, '/games')
 api.add_resource(GuessResource, "/guess")
 

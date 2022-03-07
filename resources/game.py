@@ -1,12 +1,13 @@
+from flask import jsonify,request
 from flask_restful import Resource, reqparse
 from models.game import Game
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.user import User
 
 
+
 class GameResource(Resource):
-    # parser = reqparse.RequestParser()
-    # parser.add_argument("user_id", type=int, required=True, help="Must contain a User ID")
+    
     @jwt_required()
     def get(self, id):
         game = Game.find_by_id(id)
@@ -14,22 +15,30 @@ class GameResource(Resource):
         if game:
             print(game.guesses_left)
 
-            return game.json()
+            return game.json(), 200
         return {"Message": "The game ID could not be found. Please try Again"}, 404
 
     
     @jwt_required()
-    def post(self, username):
-        user = User.query.filter_by(username=username).first()
+    def post(self):
+        current_user = get_jwt_identity()
+        user = User.query.filter_by(id=current_user).first()
+        print(user.json())
+        print(user.guesses)
         
         if user:
             game = Game(creator_id =user.id)
-            print(game.wordle_answer)
+
+            
+
+            # JSON not serializble
+            game.users.append(user)
+  
             try:
                 game.save_to_db()
             except:
                 {"Message": "An error occured while processing your request"}, 500
-            return "hello world"
+            return game.json(), 200
         return {"Message": "please include a username with your request"}
 
     
@@ -50,4 +59,6 @@ class GameResource(Resource):
 class Games(Resource):
     @jwt_required()
     def get(self):
-        return {"type": "games", "data": [game.json() for game in Game.query.all()]}
+        current_user = get_jwt_identity()
+        games = Game.query.filter_by(creator_id=current_user).all()
+        return {"type": "games", "data": [game.json() for game in games]}

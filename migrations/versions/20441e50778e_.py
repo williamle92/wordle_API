@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 054e23d81210
+Revision ID: 20441e50778e
 Revises: 
-Create Date: 2022-03-02 21:54:28.270414
+Create Date: 2022-03-06 23:15:49.736473
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '054e23d81210'
+revision = '20441e50778e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,8 @@ def upgrade():
     op.create_table('game',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('wordle_answer', sa.String(length=5), nullable=False),
+    sa.Column('creator_id', sa.Integer(), nullable=True),
+    sa.Column('attempts', sa.Integer(), nullable=True),
     sa.Column('status', sa.String(length=20), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('wordle_answer')
@@ -36,7 +38,6 @@ def upgrade():
     op.create_table('guess',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('guess', sa.String(length=5), nullable=False),
-    sa.Column('accuracy', sa.Boolean(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('wordle_answer', sa.String(length=5), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
