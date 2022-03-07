@@ -28,7 +28,7 @@ class User(db.Model):
         db.session.commit()
 
     def json(self):
-        return {"id":self.id , "username":self.username, "email": self.email, 'guesses': [self.guesses]}
+        return {"id":self.id , "username":self.username, "email": self.email, 'guesses': [g.guess for g in self.guesses]}
 
     def __repr__(self):
         return f"id: {self.id}, username: {self.username}, email: {self.email}"

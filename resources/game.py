@@ -7,7 +7,6 @@ from models.user import User
 
 
 class GameResource(Resource):
-    
     @jwt_required()
     def get(self, id):
         current_user = get_jwt_identity()
@@ -27,17 +26,13 @@ class GameResource(Resource):
         
         if user:
             game = Game(creator_id =user.id)
-
-            
-
-            # JSON not serializble
             game.users.append(user)
   
             try:
                 game.save_to_db()
             except:
                 {"Message": "An error occured while processing your request"}, 500
-            return game.json(), 200
+            return game.json(), 201
         return {"Message": "please include a username with your request"}
 
     

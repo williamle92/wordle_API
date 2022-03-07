@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from models.user import User
 from werkzeug.security import generate_password_hash
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -39,8 +39,12 @@ class UserRegister(Resource):
 class UserResource(Resource):
     @jwt_required()
     def get(self, id):
+        current_user = get_jwt_identity()
+        logged_in_user = User.query.filter_by(id=current_user).first()
         user = User.query.filter_by(id=id).first()
-        if user:
+        print(user)
+        print(logged_in_user)
+        if user == logged_in_user:
             return user.json(), 200
-        return {"Message": "The user searched by user ID does not exist"}, 400
+        return {"Message": "The ID used must be related to the accout logged in, please try again"}, 401
     
