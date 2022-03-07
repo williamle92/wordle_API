@@ -4,16 +4,20 @@ import random
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-guesses = db.Table('guesses', 
-db.Column('guess_id', db.Integer, db.ForeignKey("guess.id"), primary_key=True), 
-db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True)
-)
+guesses = db.Table('guesses',
+                   db.Column('guess_id', db.Integer, db.ForeignKey(
+                       "guess.id"), primary_key=True),
+                   db.Column('game_id', db.Integer, db.ForeignKey(
+                       'game.id'), primary_key=True)
+                   )
 
 
 users = db.Table('users',
-db.Column('user_id', db.Integer, db.ForeignKey("user.id"), primary_key=True), 
-db.Column('game_id', db.Integer, db.ForeignKey('game.id'), primary_key=True)
-)
+                 db.Column('user_id', db.Integer, db.ForeignKey(
+                     "user.id"), primary_key=True),
+                 db.Column('game_id', db.Integer, db.ForeignKey(
+                     'game.id'), primary_key=True)
+                 )
 
 
 class Game(db.Model):
@@ -47,7 +51,7 @@ class Game(db.Model):
         return 6 - len(self.guesses)
 
     def json(self):
-        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "guesses_left": self.guesses_left, "clues": {"guesses_with_context": self.guess_with_context}}
+        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "guesses_left": self.guesses_left, "users": [user.username for user in self.users], "clues": {"guesses_with_context": self.guess_with_context}}
 
     # def guess_with_user(self):
     #     arr = []

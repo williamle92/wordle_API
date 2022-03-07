@@ -10,13 +10,12 @@ class GameResource(Resource):
     
     @jwt_required()
     def get(self, id):
-        game = Game.find_by_id(id)
+        current_user = get_jwt_identity()
+        game = Game.query.filter_by(creator_id=current_user,id=id).first()
         print(game)
         if game:
-            print(game.guesses_left)
-
             return game.json(), 200
-        return {"Message": "The game ID could not be found. Please try Again"}, 404
+        return {"Message": "The game ID associated with your account could not be found. Please try Again"}, 404
 
     
     @jwt_required()
