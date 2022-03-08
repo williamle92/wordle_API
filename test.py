@@ -1,19 +1,38 @@
-from db import db
-
-class Guess(db.Model):
-    __tablename__ = "guess"
-    id = db.Column(db.Integer, primary_key=True)
-    guess = db.Column(db.String(5),nullable=False )
-    accuracy = db.Column(db.Boolean, nullable = False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    wordle_answer = db.Column(db.String(5), db.ForeignKey("game.wordle_answer"), nullable=False)
+guess = "hello"
+secret = "apple"
 
 
-    def __init__(self, guess, game_id, user_id):
-        self.guess = guess
-        self.game_id =game_id
-        self.user_id = user_id
+
+#check for green first
+def guess_with_context(word, secret):
+    guess_arr = list(word)
+    secret_arr = list(secret)
+
+    for i in range(5):
+        letter = guess_arr[i]
+        if letter == secret_arr[i]:
+            guess_arr[i] = f"{letter}: green"
+            secret_arr[i] = "*"
+    print(secret_arr)
+    print(guess_arr)
+    #check for yellow 
+    for i in range(5):
+        letter = guess_arr[i]
+        print(letter)
+
+        if "green" in letter:
+            continue
+        
+        if letter in secret_arr:
+            guess_arr[i] = f"{letter}: yellow"
+            secret_arr.remove(letter)
+    
+    for i in range(5):
+        letter = guess_arr[i]
+        if len(letter) == 1:
+            guess_arr[i] = f"{letter}: no match"
+    print(guess_arr)
+    print(secret_arr)
 
 
-guess = Guess('audio',14,1)
-print(guess.guess, guess.user_id,guess.accuracy)
+print(guess_with_context(guess, secret))

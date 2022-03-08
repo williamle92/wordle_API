@@ -6,23 +6,22 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models.user import User
 
+
 class GuessResource(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument("guess", type=str, required=True, help="Must contain key: guess and value (a 5 letter word)")
+    parser.add_argument("guess", type=str, 
+                        required=True,
+                        help="Must contain key: guess and value (a 5 letter word)")
 
     parser.add_argument('game_id',
                         type=int,
                         required=True,
                         help="Must contain a game ID"
-    
                         )
-
-
 
     @jwt_required()
     def post(self):
         data = GuessResource.parser.parse_args()
-        print(data)
         current_user = get_jwt_identity()
         user = User.query.filter_by(id=current_user).first()
         game = Game.query.filter_by(id=data['game_id']).first()
@@ -43,7 +42,7 @@ class GuessResource(Resource):
                     return {"Message": "Congratulations! You have solved this wordle challenge."}
                 # check to see if the game has been solved already
                 if game.status == "Solved":
-                    return {"Message": "This game has already been solved, please create a new game if you would like to play"}, 
+                    return {"Message": "This game has already been solved, please create a new game if you would like to play"},
                 # checks to see the status of the game before proceeding
                 if game.guesses_left == 0 or game.status == "Closed":
                     game.status = "Closed"
@@ -55,10 +54,21 @@ class GuessResource(Resource):
                     return {"Message": "Please use a 5-letter word from the English dictionary"}, 404
                 else:
                     game.attempts += 1
-                    print(game.attempts)
                     guess.save_to_db()
                     game.guesses.append(guess)
                     game.save_to_db()
-                    
+
                 return {"Message": "Successfully created a guess", "guess": {"data": guess.json()}, "game": {"data": game.json()}}, 200
         return {"Message": "You do not have access to the game, please enter a game ID that belongs to your account"}, 401
+
+
+
+    @jwt_required()
+    def get(self, id):
+        current_user = get_jwt_identity()
+        user = User.query.filter_by(id=current_user).first()
+        guess = Guess.query.filter_by(id=id, user_id=user.id).first()
+        if not guess:
+            return {"Message": "Invalid guess ID or user does not have access to this guess"}, 400
+        else:
+            return guess.json(),200 

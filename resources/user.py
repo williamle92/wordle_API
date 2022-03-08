@@ -42,8 +42,7 @@ class UserResource(Resource):
         current_user = get_jwt_identity()
         logged_in_user = User.query.filter_by(id=current_user).first()
         user = User.query.filter_by(id=id).first()
-        print(user)
-        print(logged_in_user)
+
         if user == logged_in_user:
             return user.json(), 200
         return {"Message": "The ID used must be related to the accout logged in, please try again"}, 401

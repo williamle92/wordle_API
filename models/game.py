@@ -48,7 +48,7 @@ class Game(db.Model):
         return 6 - len(self.guesses)
 
     def json(self):
-        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "guesses_left": self.guesses_left, "users": [user.username for user in self.users], "clues": {"guesses_with_context": self.guess_with_context}}
+        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "attempts": self.attempts,"guesses_left": self.guesses_left, "users": [user.username for user in self.users], "previous_guesses": {"guesses_with_context": self.guess_with_context}}
 
 
 
@@ -56,16 +56,30 @@ class Game(db.Model):
     def guess_with_context(self):
         arr_all_words = []
         for word in self.guesses:
-    
-            arr = []
-            for i, letter in enumerate(word.guess):
-                if letter == self.wordle_answer[i]:
-                    arr.append(f"{letter}: green")
-                elif word.guess[i] in self.wordle_answer:
-                    arr.append(f'{letter}: yellow')
-                else:
-                    arr.append(f"{letter}: no match")
-            arr_all_words.append(arr)
+            guess_arr = list(word.guess)
+            secret_arr = list(self.wordle_answer)
+            # Check for the positional letter in each word first and then replace it with green
+            for i in range(len(self.wordle_answer)):
+                letter = guess_arr[i]
+                if letter == secret_arr[i]:
+                    guess_arr[i] = f"{letter}: green"
+                    secret_arr[i] = "*"
+            
+            # now we check letters in the word and then replace it with yellow
+            for i in range(len(self.wordle_answer)):
+                letter = guess_arr[i]
+                if "green" in letter:
+                    continue
+                if letter in secret_arr:
+                    guess_arr[i] = f"{letter}: yellow"
+                    secret_arr.remove(letter)
+            
+            # now loops through all the remaining letters and replace it with no match
+            for i in range(len(self.wordle_answer)):
+                letter = guess_arr[i]
+                if len(letter) == 1:
+                    guess_arr[i] = f"{letter}: no match"
+            arr_all_words.append(guess_arr)
         return arr_all_words
 
 
