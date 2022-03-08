@@ -48,9 +48,15 @@ class Game(db.Model):
         return 6 - len(self.guesses)
 
     def json(self):
-        return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "attempts": self.attempts,"guesses_left": self.guesses_left, "users": [user.username for user in self.users], "previous_guesses": {"guesses_with_context": self.guess_with_context}}
+        return {"type": "Game","id": self.id, "attempts": self.attempts, "creator_id": self.creator_id,  "guesses_left": self.guesses_left, "users": [user.username for user in self.users], "previous_guesses": {"guesses_with_context": self.guess_with_context}, "user_guesses": self.guesses_user}
 
-
+    @hybrid_property
+    def guesses_user(self):
+        arr = []
+        for guess in self.guesses:
+            string = f"ID: {guess.user_id} guess: {guess.guess}"
+            arr.append(string)
+        return arr
 
     @hybrid_property
     def guess_with_context(self):

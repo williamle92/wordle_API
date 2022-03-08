@@ -25,8 +25,9 @@ class GuessResource(Resource):
         current_user = get_jwt_identity()
         user = User.query.filter_by(id=current_user).first()
         game = Game.query.filter_by(id=data['game_id']).first()
-        if not game:
-            return {"The game ID you entered does not exist"}, 400
+        print(game)
+        if game is None:
+            return {"Message":"The game ID you entered is not linked with your account"}, 401
         # check to see if user exists and the game with the game id exists
         if user and game:
             # Check to see if the game is linked to the user
