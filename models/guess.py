@@ -11,14 +11,13 @@ class Guess(db.Model):
     wordle_answer = db.Column(db.String(5), db.ForeignKey("game.wordle_answer"), nullable=False)
 
 
-    def __init__(self, guess, game_id):
+    def __init__(self, guess, user_id):
         self.guess = guess
-        self.accuracy =  self.accuracy
-        self.game_id =game_id
+        self.user_id = user_id
 
     @hybrid_property
-    def accuracy(self, word):
-        return word == self.wordle_answer
+    def accuracy(self):
+        return self.guess == self.wordle_answer
 
 
     @hybrid_property
@@ -35,10 +34,10 @@ class Guess(db.Model):
 
 
     def json(self):
-        return {"id": self.id, "game_id": self.game_id, "guess": self.guess, "accurate": self.accuracy, "guess hints": self.guess_hints(self.guess)}
+        return {"id": self.id, "game_id": self.game_id, "guess": self.guess, "accuracy": self.accuracy, }
 
     def _repr__(self):
-        return f"word : {self.guess}, accuracy: {self.accuracy}"
+        return f"guess : {self.guess}"
 
 
     def save_to_db(self):

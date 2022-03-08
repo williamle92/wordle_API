@@ -51,7 +51,7 @@ class GameResource(Resource):
             game.users.append(user_add)
         if remove and user_remove:
             game.users.remove(user_remove)
-        game.save_to_db
+        game.save_to_db()
         return game.json(), 200
 
 

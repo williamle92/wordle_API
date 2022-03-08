@@ -65,7 +65,7 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(UserResource, "/user/<id>")
 api.add_resource(GameResource,  '/game', "/game/id/<id>")
 api.add_resource(Games, '/games')
-api.add_resource(GuessResource, "/guess")
+api.add_resource(GuessResource, "/guess", '/guess/id/<id>')
 
 
 if __name__ == "__main__":

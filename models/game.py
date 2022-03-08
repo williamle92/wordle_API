@@ -39,12 +39,9 @@ class Game(db.Model):
         self.wordle_answer = random.choice(possible_wordle_words)
         self.creator_id = creator_id
         self.status = "Open"
-        self.attempts = 6
+        self.attempts = 0
 
-    # @hybrid_property
-    # def guesses(self):
-    #     guesses = Guess.query.filter(Guess.game_id.any(id=self.id)).all()
-    #     return guesses
+
 
     @hybrid_property
     def guesses_left(self):
@@ -53,28 +50,24 @@ class Game(db.Model):
     def json(self):
         return {"type": "Game", "creator_id": self.creator_id,  "id": self.id, "guesses_left": self.guesses_left, "users": [user.username for user in self.users], "clues": {"guesses_with_context": self.guess_with_context}}
 
-    # def guess_with_user(self):
-    #     arr = []
-    #     arr.append({"guess": self., "user id": user})
+
 
     @hybrid_property
     def guess_with_context(self):
         arr_all_words = []
         for word in self.guesses:
+    
             arr = []
-            for i, letter in enumerate(word):
+            for i, letter in enumerate(word.guess):
                 if letter == self.wordle_answer[i]:
-                    arr.append((letter, "green"))
-                if word[i] in self.wordle_answer:
-                    arr.append((letter, "yellow"))
+                    arr.append(f"{letter}: green")
+                elif word.guess[i] in self.wordle_answer:
+                    arr.append(f'{letter}: yellow')
                 else:
-                    arr.append((letter, "no match"))
+                    arr.append(f"{letter}: no match")
             arr_all_words.append(arr)
         return arr_all_words
 
-    def changeGameStatus(self):
-        if self.guesses_left == 0:
-            self.status = "Complete"
 
     def save_to_db(self):
         db.session.add(self)
@@ -85,7 +78,7 @@ class Game(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return f"id: {self.id}, status: {self.status}"
+        return f"id: {self.id}, status: {self.status}, 'guesses' : {self.guesses}"
 
     @classmethod
     def find_by_id(self, id):
