@@ -5,6 +5,7 @@ The project was inspired by the game Wordle (a word game created by Josh Wardle)
 
 ## How to use the API:
 [API Documentation](https://documenter.getpostman.com/view/15868454/UVsEVoya)
+
 The API will require user authentication to the API. Register with the '/register' route and the login with '/login'. All requests must be in JSON format.
 
 Each player can create an account, and get that account by ID. After creating an account and logging in, each user can create a game instance. Please remember the game_id that you want to make a guess too. Or alternatively, you can call the '/games' to see which game is linked to your account. Only the user who created the game can delete or add/remove users to the game. To add/remove users, use a PUT request with:
